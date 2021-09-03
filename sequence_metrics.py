@@ -20,6 +20,7 @@ class SequenceMetrics:
             self.variance = float(sum([i - expectedValue ** 2 for i in self.sequence])) / len(self.sequence)
         return self.variance
 
+
     def getStandardDeviation(self):
         if (self.standardDeviation == None):
             self.standardDeviation = math.sqrt(self.getVariance())
