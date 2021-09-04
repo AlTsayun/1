@@ -24,8 +24,9 @@ print(f"variance:\t\t{metrics.getVariance()}")
 print(f"standard deviation:\t{metrics.getStandardDeviation()}")
 print(f"period length:\t\t{metrics.getPeriodLen()}")
 print(f"aperiod length:\t\t{metrics.getAperiodLen()}")
-# todo: fix "circle" ratio
-print(f"\"circle\" ratio:\t\t{float(pointsInCircle.getCount()) / len(metrics.getSequence())}")
+
+# multiplying by 2 as it takes 2 numbers from sequence to make a single point
+print(f"\"circle\" ratio:\t\t{float(pointsInCircle.getCount() * 2) / len(metrics.getSequence())}")
 print(f"pi / 4 ratio:\t\t{math.pi / 4}")
 
 fromInclusive = 0
