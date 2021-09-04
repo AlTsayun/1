@@ -5,9 +5,9 @@ class PeriodicMetricsIterator(MetricsIterator):
 
     def __init__(self, iter: Iterator):
         super().__init__(iter)
-        self.sequence = list()
         self.aperiodLen = None
         self.periodLen = None
+        self.sequence = list()
 
     def __iter__(self):
         return self
@@ -29,3 +29,6 @@ class PeriodicMetricsIterator(MetricsIterator):
 
     def getAperiodLen(self):
         return self.aperiodLen
+
+    def getSequence(self):
+        return self.sequence

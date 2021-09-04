@@ -2,7 +2,7 @@ import math
 from typing import Iterator
 class MetricsIterator(Iterator):
     def __init__(self, iter: Iterator):
-        self.__iter = iter
+        self.iter = iter
         self.iterationsCount = 0
         #мат ожидание
         self.expectedValue = 0
@@ -13,7 +13,7 @@ class MetricsIterator(Iterator):
         return self
 
     def __next__(self):
-        nextItem = next(self.__iter)
+        nextItem = next(self.iter)
         count = self.iterationsCount + 1
         self.variance = (self.variance * (count - 2) / (count - 1)  + (nextItem - self.expectedValue) ** 2 / count ) if count != 1 else 0
         self.expectedValue = (self.expectedValue * (count - 1) + nextItem) / count
