@@ -1,15 +1,15 @@
 from lemer import Lemer
-from sequence_metrics import SequenceMetrics
+from periodic_metrics_iterator import PeriodicMetricsIterator
 from uniform_distribution_metrics import UniformDistributionMetrics
 
-lemer = Lemer(3,5,3)
-
-sequence = [lemer.getNext() for i in range(0,50)]
-print(sequence)
-metrics = SequenceMetrics(sequence)
+metrics = PeriodicMetricsIterator(Lemer(3,5,1))
+for x in metrics:
+    print(x)
 print(metrics.getExpectedValue())
 print(metrics.getVariance())
 print(metrics.getStandardDeviation())
+print(metrics.getPeriodLen())
+print(metrics.getAperiodLen())
 
 fromInclusive = 0
 toInclusive = 1
