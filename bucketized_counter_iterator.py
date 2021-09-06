@@ -16,4 +16,14 @@ class BucketizedCounterIterator(Iterator):
         nextItem = next(self.iter)
         self.buckets[math.floor(nextItem / ((self.toInclusive - self.fromInclusive) / len(self.buckets)))] += 1
         return nextItem
+
+    def getBuckets(self):
+        return self.buckets
+
+    def getFromInclusive(self):
+        return self.fromInclusive
+
+    def getToInclusive(self):
+        return self.toInclusive
+
     

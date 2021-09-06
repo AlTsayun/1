@@ -1,6 +1,7 @@
 import math
 class UniformDistributionMetrics:
     def __init__(self, fromInclusive, toInclusive):
+        
         self.fromInclusive = fromInclusive
         self.toInclusive = toInclusive
 
@@ -10,6 +11,7 @@ class UniformDistributionMetrics:
         self.variance = float(toInclusive - fromInclusive) ** 2 / 12 
         #среднее квадратичное отклонение
         self.standardDeviation =  float(toInclusive - fromInclusive) / (2 * math.sqrt(3))
+
 
     def getExpectedValue(self):
         return self.expectedValue
@@ -25,3 +27,15 @@ class UniformDistributionMetrics:
 
     def getCumulativeDistributionFunction(self):
         return lambda x: 0 if (x < self.fromInclusive) else 1 if (x > self.toInclusive) else  float(x - self.fromInclusive) / (self.toInclusive - self.fromInclusive) 
+
+    def getCircleRatio(self):
+        return math.pi / 4
+
+    def getName(self):
+        return "uniform distribution"
+
+    def getPeriodLength(self):
+        return None
+    
+    def getAperiodLength(self):
+        return None

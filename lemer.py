@@ -13,3 +13,9 @@ class Lemer(Iterator):
     def __next__(self):
         self.currentR = (self.currentR * self.a) % self.m
         return float(self.currentR) / self.m
+
+    def getFromInclusive(self):
+        return 0.0
+
+    def getToInclusive(self):
+        return 1.0

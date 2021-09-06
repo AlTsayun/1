@@ -3,8 +3,8 @@ from metrics_iterator import MetricsIterator
 
 class PeriodicMetricsIterator(MetricsIterator):
 
-    def __init__(self, iter: Iterator):
-        super().__init__(iter)
+    def __init__(self, iter: Iterator, name):
+        super().__init__(iter, name)
         self.aperiodLen = None
         self.periodLen = None
         self.sequence = list()
@@ -24,10 +24,10 @@ class PeriodicMetricsIterator(MetricsIterator):
             self.sequence.append(nextItem)
             return nextItem
 
-    def getPeriodLen(self):
+    def getPeriodLength(self):
         return self.periodLen
 
-    def getAperiodLen(self):
+    def getAperiodLength(self):
         return self.aperiodLen
 
     def getSequence(self):

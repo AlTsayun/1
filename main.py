@@ -1,4 +1,12 @@
-import math
+from gui.lemer_hist_window import LemerHistWindow
+from metrics_iterator import MetricsIterator
+from gui.sequence_metrics_window import PeriodicMetricsWindow
+from typing import Iterator
+from gui.loading_window import LoadingWindow
+from gui.lemer_input_window import LemerInputWindow
+
+from threading import Thread
+
 from event_counter import EventCounter
 from buffered_action_iterator import BufferedActionIterator
 from bucketized_counter_iterator import BucketizedCounterIterator
@@ -6,45 +14,59 @@ from lemer import Lemer
 from periodic_metrics_iterator import PeriodicMetricsIterator
 from uniform_distribution_metrics import UniformDistributionMetrics
 
-#a = 16807, m = 2147483647
-metrics = PeriodicMetricsIterator(Lemer(997,883,1))
-bucketizedCounter = BucketizedCounterIterator(metrics, 20, 0, 1)
-pointsInCircle = EventCounter()
-bufActionIter = BufferedActionIterator(bucketizedCounter, 2, lambda buf: (
-        pointsInCircle.emit() if ((buf[0] ** 2) + (buf[1] ** 2)) <= 1 else None
-    ))
+def calculateLemerMetrics(a, m, r0, bucketsCount):
+    print("calculate")
+    #a = 16807, m = 2147483647
+    #a = 105491, m = 1999999, r0 = 20441
+    #a = 2803, m = 4999, r0 = 1097
+
+    lemer = Lemer(a, m, r0)
+
+    def iterate(lemer: Iterator):
+
+        isCancelled = False
+
+        def cancel():
+            nonlocal isCancelled
+            isCancelled = True
+
+        loadingWindow = LoadingWindow(cancelAction= cancel)
+
+        fromInclusive = lemer.getFromInclusive()
+        toInclusive = lemer.getToInclusive()
+        metrics = PeriodicMetricsIterator(lemer, "Lemer distribution")
+        bucketizedCounter = BucketizedCounterIterator(metrics, bucketsCount, fromInclusive, toInclusive)
+
+        for _ in bucketizedCounter:
+            if isCancelled:
+                return
+        
+        loadingWindow.destroy()
+
+        PeriodicMetricsWindow(metrics)
+        PeriodicMetricsWindow(UniformDistributionMetrics(fromInclusive, toInclusive))
+        LemerHistWindow(bucketizedCounter.getBuckets(), fromInclusive, toInclusive)
+
+        # def plotLemerHist(buckets, fromInclusive, toInclusive):
+            
+        #     bucketsCount = len(buckets)
+        #     fig, ax = plt.subplots()
+        #     plt.title("Lemer distribution histogram")
+        #     bucketsSum = sum(buckets)
+        #     step = (toInclusive - fromInclusive) / bucketsCount
+        #     bins = np.arange(fromInclusive, toInclusive + step / 2, step= step)
+        #     ax.hist(bins[:-1], bins= bins, weights= [float(x) / bucketsSum for x in buckets])
+        #     averageY = 1.0 / bucketsCount
+        #     ax.hlines(averageY, fromInclusive, toInclusive, color= "green")
+        #     ax.text(0, averageY, "1/m", ha='right', va='center')
+        #     plt.show()
+
+        # p = Process(target= plotLemerHist, args= (bucketizedCounter.getBuckets(), fromInclusive, toInclusive))
+        # p.start()
 
 
-for x in bufActionIter:
-    pass
-    # print(x)
-print("metrics:")
-print(f"expected value:\t\t{metrics.getExpectedValue()}")
-print(f"variance:\t\t{metrics.getVariance()}")
-print(f"standard deviation:\t{metrics.getStandardDeviation()}")
-print(f"period length:\t\t{metrics.getPeriodLen()}")
-print(f"aperiod length:\t\t{metrics.getAperiodLen()}")
+    executingThread = Thread(target= iterate, args= (lemer,))
+    executingThread.start()
 
-# multiplying by 2 as it takes 2 numbers from sequence to make a single point
-print(f"\"circle\" ratio:\t\t{float(pointsInCircle.getCount() * 2) / len(metrics.getSequence())}")
-print(f"pi / 4 ratio:\t\t{math.pi / 4}")
-
-fromInclusive = 0
-toInclusive = 1
-metrics = UniformDistributionMetrics(fromInclusive, toInclusive)
-
-print("uniform distribution metrics:")
-print(f"expected value:\t\t{metrics.getExpectedValue()}")
-print(f"variance:\t\t{metrics.getVariance()}")
-print(f"standard deviation:\t{metrics.getStandardDeviation()}")
-
-# func = metrics.getCumulativeDistributionFunction()
-# print("CumulativeDistributionFunction:")
-# for i in [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
-#     print(func(i))
-
-# func = metrics.getProbabilityDensityFunction()
-# print("ProbabilityDensityFunction:")
-# for i in [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
-#     print(func(i))
-
+inputWindow = LemerInputWindow(lambda a, m, r0: calculateLemerMetrics(a, m, r0, 20) )
+inputWindow.mainloop()
